@@ -108,4 +108,4 @@ def find_open_restaurants(csv_filename, search_datetime):
     return open_list
 
 # write tests
-print find_open_restaurants("rest_hours.csv", datetime.datetime(2014, 7, 13, 12, 20, 0, 0))
+print find_open_restaurants("rest_hours.csv", datetime.datetime(2014, 7, 13, 22, 40, 0, 0))
