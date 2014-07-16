@@ -11,6 +11,7 @@ import datetime
 from dateutil import parser
 
 
+
 # weekday indices corresponding to python's datetime module's weekdays. monday = 0
 WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -21,6 +22,7 @@ def lookup(day):
 
 class Restaurant(object):
     def __init__(self, name, hours):
+        self.name = name
         self.daily_hours = [None] * 7
         self.parse_hours(hours)
 
@@ -106,4 +108,4 @@ def find_open_restaurants(csv_filename, search_datetime):
     return open_list
 
 # write tests
-print find_open_restaurants("rest_hours.csv", datetime.datetime(2014, 7, 15, 12, 20, 0, 0))
+print find_open_restaurants("rest_hours.csv", datetime.datetime(2014, 7, 13, 12, 20, 0, 0))
