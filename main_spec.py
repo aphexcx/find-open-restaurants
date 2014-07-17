@@ -29,3 +29,9 @@ class TestMain:
                 ['The Cheesecake Factory', 'Rose Pistola', "Alioto's Restaurant", 'Sudachi', 'Penang Garden', 'Alhamra',
                  'San Dong House', 'India Garden Restaurant']
         )
+
+    def test_is_open(self):
+        #
+        r = Restaurant("", "Mon-Sun 11:30 am - 9 pm")
+        assert r.is_open(datetime.datetime(2014, 7, 14, 12, 40, 0, 0)) == True
+        assert r.is_open(datetime.datetime(2014, 7, 13, 22, 40, 0, 0)) == False
