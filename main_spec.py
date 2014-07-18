@@ -24,14 +24,19 @@ class TestMain:
     def test_find_open_restaurants_weekend(self):
         #9:40PM on Sunday
         assert (find_open_restaurants("rest_hours.csv",
-                                      datetime.datetime(2014, 7, 13, 21, 40, 0, 0))
+                                      datetime.datetime(2014, 7, 13, 22, 40, 0, 0))
                 ==
                 ['The Cheesecake Factory', 'Rose Pistola', "Alioto's Restaurant", 'Sudachi', 'Penang Garden', 'Alhamra',
                  'San Dong House', 'India Garden Restaurant']
+
         )
 
     def test_is_open(self):
-        #
-        r = Restaurant("", "Mon-Sun 11:30 am - 9 pm")
+        r = Restaurant("", "Mon-Sat 11:30 am - 9 pm")
+        # Monday 12:40PM is within open days and hours
         assert r.is_open(datetime.datetime(2014, 7, 14, 12, 40, 0, 0)) == True
-        assert r.is_open(datetime.datetime(2014, 7, 13, 22, 40, 0, 0)) == False
+        # Saturday 10:40PM is within open days, but outside of hours ()
+        assert r.is_open(datetime.datetime(2014, 7, 12, 22, 40, 0, 0)) == False
+        # Sunday 12:40PM is not within open days or hours
+        assert r.is_open(datetime.datetime(2014, 7, 13, 12, 40, 0, 0)) == False
+
