@@ -12,6 +12,7 @@ from dateutil import parser
 
 
 
+
 # weekday indices corresponding to python's datetime module's weekdays. monday = 0
 WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -20,11 +21,16 @@ def lookup(day):
     return WEEKDAYS.index(day)
 
 
+class RestaurantInitializationException(Exception):
+    pass
+
+
 class Restaurant(object):
     def __init__(self, name, hours):
         self.name = name
         self.daily_hours = [None] * 7
         self.parse_hours(hours)
+        print self.daily_hours
 
     def record_hours(self, day, opening_time, closing_time):
         index = lookup(day)
@@ -35,8 +41,8 @@ class Restaurant(object):
         # convert that into a list of daily hours
         # for each day of the week, the opening hours are filled in. for example:
         # A restaurant open from 5pm-9pm on Sundays and 11:30am to 9:30pm on Mondays and closed the rest of the week:
-
         # daily_hours = [((17,0), (21,0)), ((11,30), (21,30)), None, None, None, None, None]
+
         # chop up the string by "/"
         specs = hours.split("/")
 
@@ -48,8 +54,11 @@ class Restaurant(object):
         # each one of those, parse with a regex to figure out the days, and parse the hours
         for spec in specs:
             # hours
-            opens_dt = parser.parse(scrub(spec.split(' - ')[0]))
-            closes_dt = parser.parse(scrub(spec.split(' - ')[1]))
+            try:
+                opens_dt = parser.parse(scrub(spec.split(' - ')[0]))
+                closes_dt = parser.parse(scrub(spec.split(' - ')[1]))
+            except ValueError:
+                raise RestaurantInitializationException("Bad formatting for opening hours")
             opens = (opens_dt.hour, opens_dt.minute)
             closes = (closes_dt.hour, closes_dt.minute)
             #days
@@ -65,7 +74,6 @@ class Restaurant(object):
                 if days['extra_day']:
                     # there's another day appended to the range, like "Mon-Thu, Sun"
                     self.daily_hours[lookup(days['extra_day'])] = (opens, closes)
-
             elif days['only_day']:
                 # there's just a single day in this spec, like "Sun"
                 self.daily_hours[lookup(days['only_day'])] = (opens, closes)
@@ -95,17 +103,13 @@ class Restaurant(object):
 def find_open_restaurants(csv_filename, search_datetime):
     # for each restaurant, if it's open at the given time, add to the list to be returned
     open_list = []
-    with open(csv_filename) as f:
-        lines = f.readlines()
 
     with open(csv_filename, 'rb') as f:
         reader = csv.reader(f)
         for row in reader:
-            name, hours = row
-            restaurant = Restaurant(name, hours)
+            restaurant = Restaurant(*row)
             if restaurant.is_open(search_datetime):
-                open_list.append(name)
+                open_list.append(restaurant.name)
     return open_list
 
-# write tests
-print find_open_restaurants("rest_hours.csv", datetime.datetime(2014, 7, 13, 22, 40, 0, 0))
+    # print find_open_restaurants("rest_hours.csv", datetime.datetime(2014, 7, 13, 22, 40, 0, 0))

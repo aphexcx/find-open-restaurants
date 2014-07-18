@@ -1,5 +1,6 @@
-from main import *
+import pytest
 
+from main import *
 #pytest tests to exercise main.py
 
 class TestMain:
@@ -32,7 +33,7 @@ class TestMain:
         )
 
     def test_is_open(self):
-        r = Restaurant("", "Mon-Sat 11:30 am - 9 pm")
+        r = Restaurant("Soup Nazi", "Mon-Sat 11:30 am - 9 pm")
         # Monday 12:40PM is within open days and hours
         assert r.is_open(datetime.datetime(2014, 7, 14, 12, 40, 0, 0)) == True
         # Saturday 10:40PM is within open days, but outside of hours ()
@@ -40,3 +41,16 @@ class TestMain:
         # Sunday 12:40PM is not within open days or hours
         assert r.is_open(datetime.datetime(2014, 7, 13, 12, 40, 0, 0)) == False
 
+    def test_parse_hours(self):
+        # simple hours string
+        r = Restaurant("Top of the Muffin to You!", "Mon-Sun 11:30 am - 9 pm")
+        assert r.daily_hours == [((11, 30), (21, 0)), ((11, 30), (21, 0)), ((11, 30), (21, 0)), ((11, 30), (21, 0)),
+                                 ((11, 30), (21, 0)), ((11, 30), (21, 0)), ((11, 30), (21, 0))]
+        #complex hours string
+        r = Restaurant("Soup Nazi",
+                       "Mon-Thu 11 am - 10:30 pm  / Fri 11 am - 11 pm  / Sat 11:30 am - 11 pm  / Sun 4:30 pm - 10:30 pm")
+        assert r.daily_hours == [((11, 0), (22, 30)), ((11, 0), (22, 30)), ((11, 0), (22, 30)), ((11, 0), (22, 30)),
+                                 ((11, 0), (23, 0)), ((11, 30), (23, 0)), ((16, 30), (22, 30))]
+        # bad hours string
+        with pytest.raises(RestaurantInitializationException):
+            Restaurant("Soup Nazi", "No soup for you")
