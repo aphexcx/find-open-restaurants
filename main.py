@@ -12,7 +12,6 @@ from dateutil import parser
 
 
 
-
 # weekday indices corresponding to python's datetime module's weekdays. monday = 0
 WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -30,11 +29,6 @@ class Restaurant(object):
         self.name = name
         self.daily_hours = [None] * 7
         self.parse_hours(hours)
-        print self.daily_hours
-
-    def record_hours(self, day, opening_time, closing_time):
-        index = lookup(day)
-        self.daily_hours[index] = (opening_time, closing_time)
 
     def parse_hours(self, hours):
         # given an hours string, such as "Mon-Thu 11 am - 11 pm  / Fri-Sat 11 am - 12:30 am  / Sun 10 am - 11 pm"
